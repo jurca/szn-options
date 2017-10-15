@@ -12,6 +12,7 @@
     RIGHT: 'HORIZONTAL_POSITION.RIGHT',
   }
 
+  // TODO: when scrolling, scroll to the currently selected option on change
   SznElements['szn-options'] = class SznOptions {
     constructor(rootElement, uiContainer) {
       this._root = rootElement
@@ -36,6 +37,7 @@
 
         target._model.selected = true
         this._optionsContainer.dispatchEvent(new CustomEvent('change', {bubbles: true, cancelable: true}))
+        this._optionsContainer.dispatchEvent(new CustomEvent('szn-options-selected', {bubbles: true, cancelable: true}))
       }
 
       this.onSelectionChange = () => {
