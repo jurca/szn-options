@@ -8,6 +8,10 @@ szn-options {
   position: relative;
 }
 
+[data-szn-options-ui][data-tethered] {
+  position: static;
+}
+
 [data-szn-options-ui] [data-root] {
   display: inline-block;
 
