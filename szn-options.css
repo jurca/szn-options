@@ -1,0 +1,77 @@
+szn-options {
+  display: block;
+}
+
+[data-szn-options-ui] [data-root] {
+  display: inline-block;
+
+  position: absolute;
+
+  border: 1px solid black;
+  max-width: 460px;
+  max-height: calc(100vh - 3em);
+  overflow-x: hidden;
+  overflow-y: auto;
+  box-sizing: border-box;
+
+  white-space: nowrap;
+
+  background: white;
+
+  cursor: default;
+}
+
+[data-szn-options-ui] [data-hidden] {
+  /*
+  display: none;
+  */
+}
+
+[data-szn-options-ui] [data-group] {
+  display: block;
+}
+
+[data-szn-options-ui] [data-group-label] {
+  display: block;
+
+  padding: 0.1em 0.2em;
+
+  font-weight: bold;
+}
+
+[data-szn-options-ui] [data-option] {
+  display: block;
+
+  padding: 0.1em 0.2em;
+}
+
+[data-szn-options-ui] [data-group] [data-option] {
+  padding-left: 1em;
+}
+
+[data-szn-options-ui] [data-option]:hover {
+  background: #eee;
+}
+
+[data-szn-options-ui] [data-selected] {
+  color: white;
+
+  background: #de0000;
+}
+
+[data-szn-options-ui] [data-selected]:hover {
+  background: #ef0000;
+}
+
+[data-szn-options-ui] [data-disabled] {
+  opacity: 0.5;
+}
+
+[data-szn-options-ui] [data-disabled]:hover,
+[data-szn-options-ui] [data-disabled] :hover {
+  background: none;
+}
+
+[data-szn-options-ui] [data-disabled] [data-disabled] {
+  opacity: 1;
+}
