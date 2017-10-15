@@ -32,8 +32,8 @@
   },
   "homepage": "https://github.com/jurca/szn-options#readme",
   "devDependencies": {
+    "eslint": "^4.9.0",
     "eslint-config-fbjs-opensource": "^1.0.0",
-    "eslit": "^5.0.0",
     "jest": "^21.2.1"
   }
 }
