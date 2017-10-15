@@ -21,6 +21,21 @@
       this._verticalPosition = VERTICAL_POSITION.BOTTOM
       this._tether = null
       this._optionsContainer = null
+
+      this.onClick = event => {
+        const target = event.target;
+        if (
+          !target.hasAttribute('data-option') ||
+          target.hasAttribute('data-disabled') ||
+          target._group.disabled ||
+          target._model.selected
+        ) {
+          return
+        }
+
+        target._model.selected = true
+        this._optionsContainer.dispatchEvent(new CustomEvent('change', {bubbles: true, cancelable: true}))
+      }
     }
 
     onMount() {
@@ -41,7 +56,7 @@
     setOptionsContainerElement(container) {
       // TODO: quit observing changes
       this._optionsContainer = container
-      // TODO: observe changes
+      // TODO: observe changes (selection and DOM)
       this._createUI()
 
       if (this._root.parentNode) { // we are already mounted to the DOM
@@ -50,7 +65,11 @@
     }
 
     onUnmount() {
-      // TODO: quit observing changes, drop UI
+      // TODO: quit observing changes
+      if (this._ui) {
+        this._ui.parentNode.removeChild(this._ui)
+        off(this._ui, 'click', this.onClick)
+      }
     }
 
     _initUiAdjustments() {
@@ -129,7 +148,7 @@
       }
       (this._uiContainer || document.body).appendChild(this._ui)
 
-      // TODO: add events to the root
+      on(this._ui, 'click', this.onClick)
     }
 
     _createOptionGroupOptions(optionsGroup) {
@@ -151,6 +170,7 @@
           if (currentOption.selected) {
             setDataAttribute(optionUI, 'selected')
           }
+          optionUI._group = optionsGroup
         }
         optionUI._model = currentOption
         if (currentOption.disabled) {
@@ -180,6 +200,14 @@
 
   function dropDataAttribute(element, attribute) {
     element.removeAttribute(`data-${attribute}`)
+  }
+
+  function on(eventTarget, eventType, listener) {
+    eventTarget.addEventListener(eventType, listener)
+  }
+
+  function off(eventTarget, eventType, listener) {
+    eventTarget.removeEventListener(eventType, listener)
   }
 
   if (SznElements.init) {
