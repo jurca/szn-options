@@ -50,6 +50,10 @@
     }
 
     onMount() {
+      if (!this._uiContainer) {
+        this._uiContainer = this._root.querySelector('[data-szn-options-ui]')
+      }
+
       if (this._ui) {
         this._initUiAdjustments()
       }
