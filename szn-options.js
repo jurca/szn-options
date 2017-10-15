@@ -66,6 +66,8 @@
         )
       }
       this._tether = tether
+      this._updatePosition()
+      this._updateSize()
     }
 
     setOptionsContainerElement(container) {
@@ -115,11 +117,14 @@
       setInterval(() => {
         this._updatePosition()
         this._updateSize()
-      }, 10)
+      }, 10) // TODO: use events instead
     }
 
     _updatePosition() {
       if (!this._uiContainer) {
+        if (this._tether) {
+          this._updateTetheredOptionsPosition()
+        }
         return
       }
 
@@ -139,9 +144,6 @@
       }
 
       const viewportWidth = window.innerWidth
-      if (uiRootBounds.width > viewportWidth) {
-        return
-      }
       if (this._horizontalPosition === HORIZONTAL_POSITION.LEFT) {
         if (uiRootBounds.right > viewportWidth) {
           this._horizontalPosition = HORIZONTAL_POSITION.RIGHT
@@ -155,13 +157,48 @@
       }
     }
 
-    _updateSize() {
-      const uiRootBounds = this._ui._root.getBoundingClientRect()
-      if (this._verticalPosition === VERTICAL_POSITION.TOP) {
-        this._ui._root.style.maxHeight = `${uiRootBounds.bottom}px`
+    _updateTetheredOptionsPosition() {
+      const uiRoot = this._ui._root;
+      const tetherBounds = this._tether.getBoundingClientRect()
+      const tetherCenter = {
+        x: tetherBounds.left + tetherBounds.width / 2,
+        y: tetherBounds.top + tetherBounds.height / 2,
+      }
+
+      if (tetherCenter.y > window.innerHeight / 2) {
+        this._verticalPosition = VERTICAL_POSITION.TOP
+        uiRoot.style.top = 0
       } else {
-        const viewportHeight = window.innerHeight
-        this._ui._root.style.maxHeight = `${viewportHeight - uiRootBounds.top}px`
+        this._verticalPosition = VERTICAL_POSITION.BOTTOM
+        uiRoot.style.top = `${tetherBounds.bottom + document.scrollingElement.scrollTop}px`
+      }
+
+      const uiBounds = this._ui._root.getBoundingClientRect()
+      if (tetherBounds.left + uiBounds.width < window.innerWidth) {
+        this._horizontalPosition = HORIZONTAL_POSITION.LEFT
+        uiRoot.style.left = `${tetherBounds.left + document.scrollingElement.scrollLeft}px`
+      } else {
+        this._horizontalPosition = HORIZONTAL_POSITION.RIGHT
+        uiRoot.style.left = `${tetherBounds.right - uiBounds.width + document.scrollingElement.scrollLeft}px`
+      }
+    }
+
+    _updateSize() {
+      if (this._uiContainer) {
+        const uiRootBounds = this._ui._root.getBoundingClientRect()
+        if (this._verticalPosition === VERTICAL_POSITION.TOP) {
+          this._ui._root.style.maxHeight = `${uiRootBounds.bottom}px`
+        } else {
+          const viewportHeight = window.innerHeight
+          this._ui._root.style.maxHeight = `${viewportHeight - uiRootBounds.top}px`
+        }
+      } else if (this._tether) {
+        const tetherBounds = this._tether.getBoundingClientRect()
+        if (this._verticalPosition === VERTICAL_POSITION.TOP) {
+          this._ui._root.style.maxHeight = `${tetherBounds.top}px`
+        } else {
+          this._ui._root.style.maxHeight = `${window.innerHeight - tetherBounds.bottom}px`
+        }
       }
     }
 
@@ -179,7 +216,7 @@
 
       if (!this._uiContainer) {
         const uiRoot = this._ui
-        this._ui = makeElement(['szn-options-ui'],
+        this._ui = makeElement(['szn-options-ui', 'tethered'],
           this._ui,
         )
         this._ui._root = uiRoot
