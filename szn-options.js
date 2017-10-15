@@ -24,7 +24,7 @@
       this._isWatchingOptions = false
 
       this.onClick = event => {
-        const target = event.target;
+        const target = event.target
         if (
           !target.hasAttribute('data-option') ||
           target.hasAttribute('data-disabled') ||
@@ -158,7 +158,7 @@
     }
 
     _updateTetheredOptionsPosition() {
-      const uiRoot = this._ui._root;
+      const uiRoot = this._ui._root
       const tetherBounds = this._tether.getBoundingClientRect()
       const tetherCenter = {
         x: tetherBounds.left + tetherBounds.width / 2,
