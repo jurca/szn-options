@@ -212,7 +212,7 @@
         this._createOptionGroupOptions(this._optionsContainer),
       )
       this._ui._root = this._ui
-      this._ui.setAttribute('aria-hidden', 'true')
+      this._ui.setAttribute('role', 'listbox')
 
       if (!this._uiContainer) {
         const uiRoot = this._ui
@@ -245,6 +245,7 @@
           if (currentOption.selected) {
             setDataAttribute(optionUI, 'selected')
           }
+          optionUI.setAttribute('role', 'option')
           optionUI._group = optionsGroup
         }
         optionUI._model = currentOption
