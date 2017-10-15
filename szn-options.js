@@ -21,6 +21,7 @@
       this._verticalPosition = VERTICAL_POSITION.BOTTOM
       this._tether = null
       this._optionsContainer = null
+      this._isWatchingOptions = false
 
       this.onClick = event => {
         const target = event.target;
@@ -36,11 +37,25 @@
         target._model.selected = true
         this._optionsContainer.dispatchEvent(new CustomEvent('change', {bubbles: true, cancelable: true}))
       }
+
+      this.onSelectionChange = () => {
+        const selectedOptionUi = this._ui.querySelector('[data-selected]')
+        dropDataAttribute(selectedOptionUi, 'selected')
+        for (const optionUi of Array.prototype.slice.call(this._ui.querySelectorAll('[data-option]'))) {
+          if (optionUi._model.selected) {
+            setDataAttribute(optionUi, 'selected')
+          }
+        }
+      }
     }
 
     onMount() {
       if (this._ui) {
         this._initUiAdjustments()
+      }
+
+      if (!this._isWatchingOptions && this._optionsContainer) {
+        this._startWatchingOptions()
       }
     }
 
@@ -54,22 +69,44 @@
     }
 
     setOptionsContainerElement(container) {
-      // TODO: quit observing changes
+      if (this._optionsContainer && this._isWatchingOptions) {
+        this._stopWatchingOptions()
+      }
       this._optionsContainer = container
-      // TODO: observe changes (selection and DOM)
       this._createUI()
 
       if (this._root.parentNode) { // we are already mounted to the DOM
         this._initUiAdjustments()
+        if (!this._isWatchingOptions) {
+          this._startWatchingOptions()
+        }
       }
     }
 
     onUnmount() {
-      // TODO: quit observing changes
+      if (this._isWatchingOptions) {
+        this._stopWatchingOptions()
+      }
+
       if (this._ui) {
         this._ui.parentNode.removeChild(this._ui)
         off(this._ui, 'click', this.onClick)
       }
+    }
+
+    _startWatchingOptions() {
+      for (const eventType of ['change', 'keypress']) {
+        on(this._optionsContainer, eventType, this.onSelectionChange)
+      }
+      // TODO: observe DOM changes
+      this._isWatchingOptions = true
+    }
+
+    _stopWatchingOptions() {
+      for (const eventType of ['change', 'keypress']) {
+        off(this._optionsContainer, eventType, this.onSelectionChange)
+      }
+      this._isWatchingOptions = false
     }
 
     _initUiAdjustments() {
@@ -129,6 +166,7 @@
     }
 
     _createUI() {
+      // TODO: make the UI invisible if we are detached and not mounted yet
       if (this._ui) {
         this._ui.parentNode.removeChild(this._ui)
       }
