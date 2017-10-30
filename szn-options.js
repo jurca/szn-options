@@ -13,6 +13,7 @@
   }
 
   // TODO: when scrolling, scroll to the currently selected option on change
+  // TODO: select option by typing it out
   SznElements['szn-options'] = class SznOptions {
     constructor(rootElement, uiContainer) {
       this._root = rootElement
