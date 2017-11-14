@@ -1,5 +1,5 @@
 {
-  "name": "szn-options",
+  "name": "@jurca/szn-options",
   "version": "0.0.0",
   "description": "Accessible HTML selectbox options list with customizable UI. Based on web components and easy to integrate with various frameworks like React or Angular.",
   "main": "szn-options.js",
@@ -9,6 +9,9 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/jurca/szn-options.git"
+  },
+  "publishConfig": {
+    "registry": "https://registry.npmjs.org/"
   },
   "keywords": [
     "html",
