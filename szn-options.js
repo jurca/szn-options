@@ -234,6 +234,15 @@
       on(this._ui, 'click', this.onClick)
     }
 
+    /**
+     * Generates the elements representing the options hierarchy within the provided element. The element main contain
+     * <code>optgroup</code> elements, options within these will be grouped accordingly. Nested groups are not
+     * supported because the <code>optgroup</code> element cannot contain <code>optgroup</code> elements.
+     *
+     * @param {Element} optionsGroup The element containing the options which the created UI will reflect.
+     * @return {DocumentFragment} A document fragment containing the generated visual representations of the provided
+     *         options and option groups.
+     */
     _createOptionGroupOptions(optionsGroup) {
       const generatedUI = document.createDocumentFragment()
       let currentOption = optionsGroup.firstElementChild
@@ -267,6 +276,12 @@
     }
   }
 
+  /**
+   * Returns the current viewport scroll offsets.
+   *
+   * @return {{x: number, y: number}} An object representing the current horizontal (<code>x</code>) and vertical
+   *         (<code>y</code>) scroll offset of the viewport.
+   */
   function getViewportScrollOffsets() {
     if (document.scrollingElement) {
       return {
