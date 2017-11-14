@@ -266,6 +266,14 @@
     }
   }
 
+  /**
+   * Creates a new <code>szn-</code> element, sets the specified data attributes on it to empty strings, appends the
+   * provided elements as its children and returns the created element.
+   *
+   * @param {Array<string>} dataAttributes
+   * @param {...Node} children DOM nodes to append as children.
+   * @return {Element} The created element.
+   */
   function makeElement(dataAttributes, ...children) {
     const element = document.createElement('szn-')
     for (const attribute of dataAttributes) {
@@ -277,18 +285,47 @@
     return element
   }
 
+  /**
+   * Sets the specified data attribute on the specified element to the provided value.
+   *
+   * @param {Element} element The element on which the data attribute will be set.
+   * @param {string} attribute The part of the data attribute's name after the <code>data-</code> prefix.
+   * @param {string=} value The value to set to the attribute.
+   */
   function setDataAttribute(element, attribute, value = '') {
     element.setAttribute(`data-${attribute}`, value)
   }
 
+  /**
+   * Removes the specified data attribute from the specified element.
+   *
+   * @param {Element} element The element that should have the data attribute removed.
+   * @param {string} attribute The part of the data attribute's name after the <code>data-</code> prefix.
+   */
   function dropDataAttribute(element, attribute) {
     element.removeAttribute(`data-${attribute}`)
   }
 
+  /**
+   * Adds the provided event listener to the listeners listening for DOM events of the specified type at the specified
+   * event target.
+   *
+   * @param {EventTarget} eventTarget The event target at which the listener will listen for events.
+   * @param {string} eventType The type of the DOM events the listener will listen for.
+   * @param {function(Event)} listener The event listener.
+   */
   function on(eventTarget, eventType, listener) {
     eventTarget.addEventListener(eventType, listener)
   }
 
+  /**
+   * Removes the provided event listener from the specified event target from the listeners listening the for DOM
+   * events of the specified type.
+   *
+   * @param {EventTarget} eventTarget The event target at which the listener is listening for events.
+   * @param {string} eventType The type of the DOM events the listener is listening for.
+   * @param {function(Event)} listener The event listener.
+   */
   function off(eventTarget, eventType, listener) {
     eventTarget.removeEventListener(eventType, listener)
   }
