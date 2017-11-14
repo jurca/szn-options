@@ -172,21 +172,22 @@
         y: tetherBounds.top + tetherBounds.height / 2,
       }
 
+      const viewportScrollOffsets = getViewportScrollOffsets();
       if (tetherCenter.y > window.innerHeight / 2) {
         this._verticalPosition = VERTICAL_POSITION.TOP
         uiRoot.style.top = 0
       } else {
         this._verticalPosition = VERTICAL_POSITION.BOTTOM
-        uiRoot.style.top = `${tetherBounds.bottom + document.scrollingElement.scrollTop}px`
+        uiRoot.style.top = `${tetherBounds.bottom + viewportScrollOffsets.y}px`
       }
 
       const uiBounds = this._ui._root.getBoundingClientRect()
       if (tetherBounds.left + uiBounds.width < window.innerWidth) {
         this._horizontalPosition = HORIZONTAL_POSITION.LEFT
-        uiRoot.style.left = `${tetherBounds.left + document.scrollingElement.scrollLeft}px`
+        uiRoot.style.left = `${tetherBounds.left + viewportScrollOffsets.x}px`
       } else {
         this._horizontalPosition = HORIZONTAL_POSITION.RIGHT
-        uiRoot.style.left = `${tetherBounds.right - uiBounds.width + document.scrollingElement.scrollLeft}px`
+        uiRoot.style.left = `${tetherBounds.right - uiBounds.width + viewportScrollOffsets.x}px`
       }
     }
 
@@ -263,6 +264,20 @@
         currentOption = currentOption.nextElementSibling
       }
       return generatedUI
+    }
+  }
+
+  function getViewportScrollOffsets() {
+    if (document.scrollingElement) {
+      return {
+        x: document.scrollingElement.scrollLeft,
+        y: document.scrollingElement.scrollTop,
+      }
+    }
+
+    return {
+      x: document.documentElement.scrollLeft || document.body.scrollLeft,
+      y: document.documentElement.scrollTop || document.body.scrollTop,
     }
   }
 
