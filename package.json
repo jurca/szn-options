@@ -40,6 +40,6 @@
     "jest": "^21.2.1"
   },
   "dependencies": {
-    "@jurca/szn-elements": "0.0.0"
+    "@jurca/szn-elements": "0.0.2"
   }
 }
