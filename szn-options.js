@@ -7,20 +7,67 @@
     constructor(rootElement) {
       rootElement.setOptions = (options) => this.setOptions(options)
 
+      this.updateUi = () => updateUi(this)
+
       this._root = rootElement
       this._options = null
+      this._mounted = false
+
+      this._onItemHovered = event => {
+        if (this._options.type !== 'select-one') {
+          return
+        }
+
+        const itemUi = event.target
+        if (
+          !itemUi.hasAttribute('data-szn-options-option') ||
+          itemUi._option.disabled ||
+          itemUi._option.parentNode.disabled
+        ) {
+          return
+        }
+
+        this._root.setAttribute('data-szn-options-highlighting', '')
+        const previouslyHighlighted = this._root.querySelector('[data-szn-options-highlighted]')
+        if (previouslyHighlighted) {
+          previouslyHighlighted.removeAttribute('data-szn-options-highlighted')
+        }
+        itemUi.setAttribute('data-szn-options-highlighted', '')
+      }
     }
 
     onMount() {
+      this._mounted = true
+      addEventListeners(this)
     }
 
     onUnmount() {
+      removeEventListeners(this)
+      this._root.removeAttribute('data-szn-options-highlighting')
+      this._mounted = false
     }
 
     setOptions(options) {
+      if (this._options) {
+        removeEventListeners(this)
+      }
+
       this._options = options
+      addEventListeners(this)
       updateUi(this)
     }
+  }
+
+  function addEventListeners(instance) {
+    if (!instance._mounted || !instance._options) {
+      return
+    }
+
+    instance._root.addEventListener('mouseover', instance._onItemHovered)
+  }
+
+  function removeEventListeners(instance) {
+    instance._root.removeEventListener('mouseover', instance._onItemHovered)
   }
 
   function updateUi(instance) {
@@ -33,7 +80,7 @@
 
   function updateGroupUi(uiGroup, optionsGroup) {
     removeRemovedItems(uiGroup, optionsGroup)
-    updateExistingItems(uiGroup, optionsGroup)
+    updateExistingItems(uiGroup)
     addMissingItems(uiGroup, optionsGroup)
   }
 
@@ -43,9 +90,9 @@
 
   /**
    * @param {HTMLElement} itemUi
-   * @param {(HTMLOptionElement|HTMLOptGroupElement)} option
    */
-  function updateItem(itemUi, option) {
+  function updateItem(itemUi) {
+    const option = itemUi._option
     if (option.disabled) {
       itemUi.setAttribute('disabled', '')
     } else {
@@ -78,8 +125,9 @@
     while (nextOption) {
       if (!nextItemUi || nextItemUi._option !== nextOption) {
         const newItemUi = document.createElement('szn-')
+        newItemUi._option = nextOption
         newItemUi.setAttribute('data-szn-options-' + (nextOption.tagName === "OPTGROUP" ? 'optgroup' : 'option'), '')
-        updateItem(newItemUi, nextOption)
+        updateItem(newItemUi)
         groupUi.insertBefore(newItemUi, nextItemUi)
       } else {
         nextItemUi = nextItemUi && nextItemUi.nextElementSibling

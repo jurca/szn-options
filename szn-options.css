@@ -48,3 +48,11 @@ szn-options [data-szn-options-optgroup-label]:before {
   content: attr(data-szn-options-optgroup-label);
   font-weight: bold;
 }
+
+szn-options[data-szn-options-highlighting] [data-szn-options-selected] {
+  background: none;
+}
+
+szn-options[data-szn-options-highlighting] [data-szn-options-highlighted] {
+  background: #eeeeee;
+}
