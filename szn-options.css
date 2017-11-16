@@ -56,3 +56,7 @@ szn-options[data-szn-options-highlighting] [data-szn-options-selected] {
 szn-options[data-szn-options-highlighting] [data-szn-options-highlighted] {
   background: #eeeeee;
 }
+
+szn-options [disabled] {
+  color: #cccccc;
+}
