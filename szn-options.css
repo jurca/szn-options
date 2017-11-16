@@ -23,19 +23,27 @@ szn-options [data-szn-options-option] {
   cursor: pointer;
 }
 
+szn-options [data-szn-options-option][disabled],
+szn-options [disabled] [data-szn-options-option] {
+  cursor: default;
+}
+
 szn-options [data-szn-options-selected] {
   background: #eeeeee;
 }
 
 szn-options [data-szn-options-optgroup] {
   display: block;
-  padding-left: 12px;
+}
+
+szn-options [data-szn-options-optgroup] [data-szn-options-option] {
+  padding-left: 24px;
 }
 
 szn-options [data-szn-options-optgroup-label]:before {
   display: block;
 
-  padding: 5px 5px 5px 0;
+  padding: 5px 5px 5px 12px;
 
   content: attr(data-szn-options-optgroup-label);
   font-weight: bold;
