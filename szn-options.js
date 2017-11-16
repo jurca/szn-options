@@ -6,11 +6,11 @@
   SznElements['szn-options'] = class SznOptions {
     constructor(rootElement) {
       rootElement.setOptions = (options) => this.setOptions(options)
-
-      this.updateUi = () => updateUi(this)
+      rootElement.updateUi = () => updateUi(this)
 
       this._root = rootElement
       this._options = null
+      this._dragSelectionStartOption = null
       this._mounted = false
 
       this._onItemHovered = event => {
@@ -33,6 +33,25 @@
           previouslyHighlighted.removeAttribute('data-szn-options-highlighted')
         }
         itemUi.setAttribute('data-szn-options-highlighted', '')
+      }
+
+      this._onItemClicked = event => {
+        if (this._dragSelectionStartOption) {
+          return // multi-select
+        }
+
+        const itemUi = event.target
+        if (
+          !itemUi.hasAttribute('data-szn-options-option') ||
+          itemUi._option.disabled ||
+          itemUi._option.parentNode.disabled
+        ) {
+          return
+        }
+
+        this._root.removeAttribute('data-szn-options-highlighting')
+        this._options.selectedIndex = itemUi._option.index
+        this._options.dispatchEvent(new CustomEvent('change', {bubbles: true, cancelable: true}))
       }
     }
 
@@ -63,11 +82,15 @@
       return
     }
 
+    instance._options.addEventListener('change', instance._root.updateUi)
     instance._root.addEventListener('mouseover', instance._onItemHovered)
+    instance._root.addEventListener('mouseup', instance._onItemClicked)
   }
 
   function removeEventListeners(instance) {
+    instance._options.removeEventListener('change', instance._root.updateUi)
     instance._root.removeEventListener('mouseover', instance._onItemHovered)
+    instance._root.removeEventListener('mouseup', instance._onItemClicked)
   }
 
   function updateUi(instance) {
@@ -86,7 +109,13 @@
 
   function removeRemovedItems(groupUi, options) {}
 
-  function updateExistingItems(groupUi) {}
+  function updateExistingItems(groupUi) {
+    let itemUi = groupUi.firstElementChild
+    while (itemUi) {
+      updateItem(itemUi)
+      itemUi = itemUi.nextElementSibling
+    }
+  }
 
   /**
    * @param {HTMLElement} itemUi

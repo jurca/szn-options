@@ -13,6 +13,8 @@ szn-options {
   color: black;
 
   background: white;
+
+  user-select: none;
 }
 
 szn-options [data-szn-options-option] {
