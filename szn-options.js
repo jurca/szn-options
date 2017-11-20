@@ -14,7 +14,7 @@
       this._mounted = false
 
       this._onItemHovered = event => {
-        if (this._options.type !== 'select-one') {
+        if (this._options.multiple) {
           return
         }
 
