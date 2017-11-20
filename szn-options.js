@@ -3,15 +3,60 @@
   const SznElements = global.SznElements = global.SznElements || {}
 
   SznElements['szn-options'] = class SznOptions {
+    /**
+     * Initializes the szn-options element's implementation.
+     *
+     * @param {Element} rootElement The root HTML element of this custom element's implementation.
+     */
     constructor(rootElement) {
       rootElement.setOptions = (options) => this.setOptions(options)
       rootElement.updateUi = () => updateUi(this)
 
+      /**
+       * The root HTML element of this custom element's implementation.
+       *
+       * @type {Element}
+       */
       this._root = rootElement
+
+      /**
+       * The container of the options this element provides the UI for.
+       *
+       * @type {?HTMLElement}
+       */
       this._options = null
+
+      /**
+       * The option represented the element over which the user started to drag the mouse cursor to perform a
+       * multiple-items selection.
+       *
+       * This field is used only for multi-selects.
+       *
+       * @type {?HTMLOptionElement}
+       */
       this._dragSelectionStartOption = null
+
+      /**
+       * Flag signalling whether the element is currently mounted.
+       *
+       * @type {boolean}
+       */
       this._mounted = false
+
+      /**
+       * The DOM mutation observer used to observe modifications to the associated options.
+       *
+       * @type {MutationObserver}
+       */
       this._observer = new MutationObserver(rootElement.updateUi)
+
+      /**
+       * The previously used indexes when the <code>scrollToSelection</code> function has been called for this
+       * instance.
+       *
+       * @type {{start: number, end: number}}
+       * @see scrollToSelection
+       */
       this._lastSelectionIndexes = {
         start: -1,
         end: -1,
@@ -48,6 +93,11 @@
       this._observer.disconnect()
     }
 
+    /**
+     * Sets the element containing the options to display in this szn-options element.
+     *
+     * @param {HTMLElement} options The element containing the options to display.
+     */
     setOptions(options) {
       if (this._options) {
         removeEventListeners(this)
@@ -64,6 +114,11 @@
     }
   }
 
+  /**
+   * Registers the provided szn-options element's DOM mutation observer to observe the related options for changes.
+   *
+   * @param {SznElements.SznOptions} instance The szn-options element instance.
+   */
   function registerOptionsObserver(instance) {
     if (!instance._mounted || !instance._options) {
       return
@@ -78,6 +133,14 @@
     })
   }
 
+  /**
+   * Registers event listeners that the provided szn-options instance requires to function correctly.
+   *
+   * The function has no effect if the provided szn-options element is not mounted into the document or has not been
+   * provided with its options yet.
+   *
+   * @param {SznElements.SznOptions} instance The szn-options element instance.
+   */
   function addEventListeners(instance) {
     if (!instance._mounted || !instance._options) {
       return
@@ -90,6 +153,11 @@
     addEventListener('mouseup', instance._onSelectionEnd)
   }
 
+  /**
+   * Deregisters all event listeners used by the provided szn-options element.
+   *
+   * @param {SznElements.SznOptions} instance The szn-options element instance.
+   */
   function removeEventListeners(instance) {
     instance._options.removeEventListener('change', instance._onSelectionChange)
     instance._root.removeEventListener('mouseover', instance._onItemHovered)
@@ -98,6 +166,14 @@
     removeEventListener('mouseup', instance._onSelectionEnd)
   }
 
+  /**
+   * Handles the user moving the mouse pointer over an option in the szn-options element's UI. The function updates the
+   * current multiple-items selection if the element represents a multi-select, or updates the currently highlighted
+   * item in the UI of a single-select.
+   *
+   * @param {SznElements.SznOptions} instance The szn-options element instance.
+   * @param {Element} itemUi The element which's area the mouse pointer entered.
+   */
   function onItemHovered(instance, itemUi) {
     if (!isEnabledOptionUi(itemUi)) {
       return
@@ -105,7 +181,7 @@
 
     if (instance._options.multiple) {
       if (instance._dragSelectionStartOption) {
-        updateMultiSelection(instance, event.target)
+        updateMultiSelection(instance, itemUi)
       }
       return
     }
@@ -118,6 +194,15 @@
     itemUi.setAttribute('data-szn-options-highlighted', '')
   }
 
+  /**
+   * Handles the user releasing the primary mouse button over an element representing an item.
+   *
+   * The function ends multiple-items selection for multi-selects, ends options highlighting and marks the the selected
+   * option for single-selects.
+   *
+   * @param {SznElements.SznOptions} instance The szn-options element instance.
+   * @param {Element} itemUi The element at which the user released the primary mouse button.
+   */
   function onItemClicked(instance, itemUi) {
     if (instance._dragSelectionStartOption) { // multi-select
       instance._dragSelectionStartOption = null
@@ -133,6 +218,15 @@
     instance._options.dispatchEvent(new CustomEvent('change', {bubbles: true, cancelable: true}))
   }
 
+  /**
+   * Handles start of the user dragging the mouse pointer over the UI of a multi-selection szn-options element. The
+   * function marks the starting item.
+   *
+   * The function has no effect for single-selects.
+   *
+   * @param {SznElements.SznOptions} instance The szn-options element instance.
+   * @param {Element} itemUi The element at which the user pressed the primary mouse button down.
+   */
   function onItemSelectionStart(instance, itemUi) {
     if (!instance._options.multiple || !isEnabledOptionUi(itemUi)) {
       return
@@ -142,22 +236,41 @@
     updateMultiSelection(instance, itemUi)
   }
 
+  /**
+   * Scrolls, only if necessary, the UI of the provided szn-options element to make the last selected option visible.
+   * Which option is the last selected one is determined by comparing the provided index with the indexes passed to the
+   * previous call of this function.
+   *
+   * @param {SznElements.SznOptions} instance The szn-options element instance.
+   * @param {number} selectionStartIndex The index of the first selected option. The index must be a non-negative
+   *        integer and cannot be greater that the total number of options; or set to <code>-1</code> if there is no
+   *        option currently selected.
+   * @param {number} selectionEndIndex The index of the last selected option. The index must be a non-negative integer,
+   *        cannot be greater than the total number of options and must not be lower than the
+   *        <code>selectionStartIndex</code>; or set to <code>-1</code> if there is no option currently selected.
+   */
   function scrollToSelection(instance, selectionStartIndex, selectionEndIndex) {
     const lastSelectionIndexes = instance._lastSelectionIndexes
     if (
-      selectionStartIndex === -1 ||
-      (selectionStartIndex === lastSelectionIndexes.start && selectionEndIndex === lastSelectionIndexes.end)
+      selectionStartIndex !== -1 &&
+      (selectionStartIndex !== lastSelectionIndexes.start || selectionEndIndex !== lastSelectionIndexes.end)
     ) {
-      return
+      const changedIndex = selectionStartIndex !== lastSelectionIndexes.start ? selectionStartIndex : selectionEndIndex
+      scrollToOption(instance, changedIndex)
     }
-
-    const changedIndex = selectionStartIndex !== lastSelectionIndexes.start ? selectionStartIndex : selectionEndIndex
-    scrollToOption(instance, changedIndex)
 
     lastSelectionIndexes.start = selectionStartIndex
     lastSelectionIndexes.end = selectionEndIndex
   }
 
+  /**
+   * Scrolls, only if necessary, the UI of the provided szn-options element to make the option at the specified index
+   * fully visible.
+   *
+   * @param {SznElements.SznOptions} instance The szn-options element instance.
+   * @param {number} optionIndex The index of the option to select. The index must be a non-negative integer and cannot
+   *        be greater than the total number of options.
+   */
   function scrollToOption(instance, optionIndex) {
     const ui = instance._root
     if (ui.clientHeight >= ui.scrollHeight) {
@@ -178,6 +291,14 @@
     ui.scrollTop += delta
   }
 
+  /**
+   * Updates the multiple-items selection. This function is meant to be used with multi-selects when the user is
+   * selecting multiple items by dragging the mouse pointer over them.
+   *
+   * @param {SznElements.SznOptions} instance The szn-options element instance.
+   * @param {Element} lastHoveredItem The element representing the UI of the last option the user has hovered using
+   *        their mouse pointer.
+   */
   function updateMultiSelection(instance, lastHoveredItem) {
     const startIndex = instance._dragSelectionStartOption.index
     const lastIndex = lastHoveredItem._option.index
@@ -195,6 +316,13 @@
     instance._options.dispatchEvent(new CustomEvent('change', {bubbles: true, cancelable: true}))
   }
 
+  /**
+   * Tests whether the provided elements represents the UI of an enabled option.
+   *
+   * @param {Element} optionUi The UI element to test.
+   * @return {boolean} <code>true</code> iff the option is enabled and can be interacted with.
+   * @see isOptionEnabled
+   */
   function isEnabledOptionUi(optionUi) {
     return (
       optionUi.hasAttribute('data-szn-options-option') &&
@@ -202,6 +330,13 @@
     )
   }
 
+  /**
+   * Tests whether the provided option is enabled - it is not disabled nor it is a child of a disabled options group.
+   * The provided option cannot be an orphan.
+   *
+   * @param {HTMLOptionElement} option The option element to test.
+   * @return {boolean} <code>true</code> iff the option is enabled and can be interacted with.
+   */
   function isOptionEnabled(option) {
     return (
       !option.disabled &&
@@ -209,6 +344,13 @@
     )
   }
 
+  /**
+   * Updates the UI, if the provided szn-options element has already been provided with the options to display. The
+   * functions synchronizes the displayed UI to reflect the available options, their status, and scrolls to the last
+   * selected option if it is not visible.
+   *
+   * @param {SznElements.SznOptions} instance The szn-options element's instance.
+   */
   function updateUi(instance) {
     if (!instance._options) {
       return
@@ -228,15 +370,31 @@
     }
   }
 
-  function updateGroupUi(uiGroup, optionsGroup) {
-    removeRemovedItems(uiGroup, optionsGroup)
-    updateExistingItems(uiGroup)
-    addMissingItems(uiGroup, optionsGroup)
+  /**
+   * Updates the contents of the provided UI to reflect the options in the provided options container. The function
+   * removes removed options from the UI, updates the existing and adds the missing ones.
+   *
+   * @param {Element} uiContainer The element containing the constructed UI reflecting the provided options.
+   * @param {HTMLElement} optionsGroup The element containing the options to be reflected in the UI.
+   */
+  function updateGroupUi(uiContainer, optionsGroup) {
+    removeRemovedItems(uiContainer, optionsGroup)
+    updateExistingItems(uiContainer)
+    addMissingItems(uiContainer, optionsGroup)
   }
 
-  function removeRemovedItems(groupUi, optionsGroup) {
+  /**
+   * Removes UI items from the UI that have been representing the options and option groups that have been removed from
+   * the provided container of options.
+   *
+   * @param {Element} uiContainer The element containing the elements reflecting the provided options and providing the
+   *        UI for the options.
+   * @param {HTMLElement} optionsGroup The element containing the options for which this szn-options element is
+   *        providing the UI.
+   */
+  function removeRemovedItems(uiContainer, optionsGroup) {
     const options = Array.prototype.slice.call(optionsGroup.children)
-    let currentItemUi = groupUi.firstElementChild
+    let currentItemUi = uiContainer.firstElementChild
     while (currentItemUi) {
       if (options.indexOf(currentItemUi._option) > -1) {
         currentItemUi = currentItemUi.nextElementSibling
@@ -245,10 +403,15 @@
 
       const itemToRemove = currentItemUi
       currentItemUi = currentItemUi.nextElementSibling
-      groupUi.removeChild(itemToRemove)
+      uiContainer.removeChild(itemToRemove)
     }
   }
 
+  /**
+   * Updates all items in the provided UI container to reflect the current state of their associated options.
+   *
+   * @param {Element} groupUi The element containing the elements representing the UIs of the options.
+   */
   function updateExistingItems(groupUi) {
     let itemUi = groupUi.firstElementChild
     while (itemUi) {
@@ -258,7 +421,13 @@
   }
 
   /**
-   * @param {HTMLElement} itemUi
+   * Updates the UI item to reflect the current state of its associated <code>option</code>/<code>optgroup</code>
+   * element.
+   *
+   * If the element represents an option group (<code>optgroup</code>), the children options will be updated as well.
+   *
+   * @param {HTMLElement} itemUi The element representing the UI of an <code>option</code>/<code>optgroup</code>
+   *        element.
    */
   function updateItem(itemUi) {
     const option = itemUi._option
@@ -288,6 +457,15 @@
     }
   }
 
+  /**
+   * Adds the options present in the options container missing the UI into the UI, while preserving the order of the
+   * options. Option groups are added recursively.
+   *
+   * @param {Element} groupUi The element containing the UIs of the options. The new options will be inserted into this
+   *        element's children.
+   * @param {HTMLElement} options An element containing the <code>option</code> and <code>optgroup</code> elements that
+   *        the UI reflects.
+   */
   function addMissingItems(groupUi, options) {
     let nextItemUi = groupUi.firstElementChild
     let nextOption = options.firstElementChild
