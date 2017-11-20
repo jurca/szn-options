@@ -62,9 +62,16 @@
         end: -1,
       }
 
+      /**
+       * The index of the option at which the multi-items selection started the last time.
+       *
+       * @type {number}
+       */
+      this._previousSelectionStartIndex = -1
+
       this._onItemHovered = event => onItemHovered(this, event.target)
       this._onItemClicked = event => onItemClicked(this, event.target)
-      this._onItemSelectionStart = event => onItemSelectionStart(this, event.target)
+      this._onItemSelectionStart = event => onItemSelectionStart(this, event.target, event)
 
       this._onSelectionEnd = () => {
         this._dragSelectionStartOption = null
@@ -226,13 +233,19 @@
    *
    * @param {SznElements.SznOptions} instance The szn-options element instance.
    * @param {Element} itemUi The element at which the user pressed the primary mouse button down.
+   * @param {MouseEvent} event The mouse event representing the user's action.
    */
-  function onItemSelectionStart(instance, itemUi) {
+  function onItemSelectionStart(instance, itemUi, event) {
     if (!instance._options.multiple || !isEnabledOptionUi(itemUi)) {
       return
     }
 
-    instance._dragSelectionStartOption = itemUi._option
+    if (event.shiftKey && instance._previousSelectionStartIndex > -1) {
+      instance._dragSelectionStartOption = instance._options.options.item(instance._previousSelectionStartIndex)
+    } else {
+      instance._dragSelectionStartOption = itemUi._option
+    }
+    instance._previousSelectionStartIndex = instance._dragSelectionStartOption.index
     updateMultiSelection(instance, itemUi)
   }
 
