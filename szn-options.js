@@ -124,8 +124,10 @@
       addEventListeners(this)
       updateUi(this)
       registerOptionsObserver(this)
+      const selectedIndex = typeof options.selectedIndex === 'number' ? options.selectedIndex : -1
+      this._previousSelectionStartIndex = selectedIndex
       if (this._mounted) {
-        scrollToSelection(this, this._options.selectedIndex, this._options.selectedIndex)
+        scrollToSelection(this, selectedIndex, selectedIndex)
       }
     }
   }
