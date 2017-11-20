@@ -53,6 +53,11 @@
         this._options.selectedIndex = itemUi._option.index
         this._options.dispatchEvent(new CustomEvent('change', {bubbles: true, cancelable: true}))
       }
+
+      this._onSelectionChange = () => {
+        this._root.removeAttribute('data-szn-options-highlighting')
+        updateUi(this)
+      }
     }
 
     onMount() {
@@ -82,13 +87,13 @@
       return
     }
 
-    instance._options.addEventListener('change', instance._root.updateUi)
+    instance._options.addEventListener('change', instance._onSelectionChange)
     instance._root.addEventListener('mouseover', instance._onItemHovered)
     instance._root.addEventListener('mouseup', instance._onItemClicked)
   }
 
   function removeEventListeners(instance) {
-    instance._options.removeEventListener('change', instance._root.updateUi)
+    instance._options.removeEventListener('change', instance._onSelectionChange)
     instance._root.removeEventListener('mouseover', instance._onItemHovered)
     instance._root.removeEventListener('mouseup', instance._onItemClicked)
   }
