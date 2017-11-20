@@ -63,6 +63,14 @@
       }
 
       /**
+       * The indexes of options that are to be selected as well while performing an additive multi-select (dragging the
+       * mouse over a multi-select while holding the Ctrl key).
+       *
+       * @type {Array<number>}
+       */
+      this._additionalSelectedIndexes = []
+
+      /**
        * The index of the option at which the multi-items selection started the last time.
        *
        * @type {number}
@@ -75,6 +83,7 @@
 
       this._onSelectionEnd = () => {
         this._dragSelectionStartOption = null
+        this._additionalSelectedIndexes = []
       }
 
       this._onSelectionChange = () => {
@@ -229,6 +238,9 @@
    * Handles start of the user dragging the mouse pointer over the UI of a multi-selection szn-options element. The
    * function marks the starting item.
    *
+   * The function marks the starting item used previously as the current starting item if the Shift key is pressed. The
+   * function marks the indexes of the currently selected items if the Ctrl key is pressed and the Shift key is not.
+   *
    * The function has no effect for single-selects.
    *
    * @param {SznElements.SznOptions} instance The szn-options element instance.
@@ -240,9 +252,18 @@
       return
     }
 
+    const options = instance._options.options
     if (event.shiftKey && instance._previousSelectionStartIndex > -1) {
-      instance._dragSelectionStartOption = instance._options.options.item(instance._previousSelectionStartIndex)
+      instance._dragSelectionStartOption = options.item(instance._previousSelectionStartIndex)
     } else {
+      if (event.ctrlKey) {
+        instance._additionalSelectedIndexes = []
+        for (let i = 0, length = options.length; i < length; i++) {
+          if (options.item(i).selected) {
+            instance._additionalSelectedIndexes.push(i)
+          }
+        }
+      }
       instance._dragSelectionStartOption = itemUi._option
     }
     instance._previousSelectionStartIndex = instance._dragSelectionStartOption.index
@@ -308,6 +329,9 @@
    * Updates the multiple-items selection. This function is meant to be used with multi-selects when the user is
    * selecting multiple items by dragging the mouse pointer over them.
    *
+   * Any item which's index is in the provided instance's list of additionally selected items will be marked as
+   * selected as well.
+   *
    * @param {SznElements.SznOptions} instance The szn-options element instance.
    * @param {Element} lastHoveredItem The element representing the UI of the last option the user has hovered using
    *        their mouse pointer.
@@ -318,11 +342,12 @@
     const minIndex = Math.min(startIndex, lastIndex)
     const maxIndex = Math.max(startIndex, lastIndex)
     const options = instance._options.options
+    const additionalIndexes = instance._additionalSelectedIndexes
 
     for (let i = 0, length = options.length; i < length; i++) {
       const option = options.item(i)
       if (isOptionEnabled(option)) {
-        option.selected = i >= minIndex && i <= maxIndex
+        option.selected = (i >= minIndex && i <= maxIndex) || additionalIndexes.indexOf(i) > -1
       }
     }
 
