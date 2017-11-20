@@ -5,8 +5,10 @@ szn-options {
 
   border: 1px solid #cccccc;
   border-radius: 0 0 4px 4px;
+  height: 100%;
   box-sizing: border-box;
-  overflow: hidden;
+  overflow: auto;
+  overflow-x: hidden;
 
   white-space: nowrap;
   text-overflow: ellipsis;
