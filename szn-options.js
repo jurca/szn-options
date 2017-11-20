@@ -76,6 +76,10 @@
         updateMultiSelection(this, itemUi)
       }
 
+      this._onSelectionEnd = () => {
+        this._dragSelectionStartOption = null
+      }
+
       this._onSelectionChange = () => {
         this._root.removeAttribute('data-szn-options-highlighting')
         updateUi(this)
@@ -113,6 +117,7 @@
     instance._root.addEventListener('mouseover', instance._onItemHovered)
     instance._root.addEventListener('mousedown', instance._onItemSelectionStart)
     instance._root.addEventListener('mouseup', instance._onItemClicked)
+    addEventListener('mouseup', instance._onSelectionEnd)
   }
 
   function removeEventListeners(instance) {
@@ -120,6 +125,7 @@
     instance._root.removeEventListener('mouseover', instance._onItemHovered)
     instance._root.removeEventListener('mousedown', instance._onItemSelectionStart)
     instance._root.removeEventListener('mouseup', instance._onItemClicked)
+    removeEventListener('mouseup', instance._onSelectionEnd)
   }
 
   function updateMultiSelection(instance, lastHoveredItem) {
