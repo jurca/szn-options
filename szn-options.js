@@ -11,6 +11,7 @@
       this._options = null
       this._dragSelectionStartOption = null
       this._mounted = false
+      this._observer = new MutationObserver(rootElement.updateUi)
       this._lastSelectionIndexes = {
         start: -1,
         end: -1,
@@ -33,6 +34,8 @@
     onMount() {
       this._mounted = true
       addEventListeners(this)
+      updateUi(this)
+      registerOptionsObserver(this)
       if (this._options) {
         scrollToSelection(this, this._options.selectedIndex, this._options.selectedIndex)
       }
@@ -42,17 +45,37 @@
       removeEventListeners(this)
       this._root.removeAttribute('data-szn-options-highlighting')
       this._mounted = false
+      this._observer.disconnect()
     }
 
     setOptions(options) {
       if (this._options) {
         removeEventListeners(this)
+        this._observer.disconnect()
       }
 
       this._options = options
       addEventListeners(this)
       updateUi(this)
+      registerOptionsObserver(this)
+      if (this._mounted) {
+        scrollToSelection(this, this._options.selectedIndex, this._options.selectedIndex)
+      }
     }
+  }
+
+  function registerOptionsObserver(instance) {
+    if (!instance._mounted || !instance._options) {
+      return
+    }
+
+    instance._observer.observe(instance._options, {
+      childList: true,
+      attributes: true,
+      characterData: true,
+      subtree: true,
+      attributeFilter: ['disabled', 'label', 'selected', 'title']
+    })
   }
 
   function addEventListeners(instance) {
