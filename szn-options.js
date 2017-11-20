@@ -15,11 +15,7 @@
 
       this._onItemHovered = event => {
         const itemUi = event.target
-        if (
-          !itemUi.hasAttribute('data-szn-options-option') ||
-          itemUi._option.disabled ||
-          itemUi._option.parentNode.disabled
-        ) {
+        if (!isEnabledOptionUi(itemUi)) {
           return
         }
 
@@ -45,11 +41,7 @@
         }
 
         const itemUi = event.target
-        if (
-          !itemUi.hasAttribute('data-szn-options-option') ||
-          itemUi._option.disabled ||
-          itemUi._option.parentNode.disabled
-        ) {
+        if (!isEnabledOptionUi(itemUi)) {
           return
         }
 
@@ -64,11 +56,7 @@
         }
 
         const itemUi = event.target
-        if (
-          !itemUi.hasAttribute('data-szn-options-option') ||
-          itemUi._option.disabled ||
-          itemUi._option.parentNode.disabled
-        ) {
+        if (!isEnabledOptionUi(itemUi)) {
           return
         }
 
@@ -137,12 +125,26 @@
 
     for (let i = 0, length = options.length; i < length; i++) {
       const option = options.item(i)
-      if (!option.disabled && !option.parentNode.disabled) {
+      if (isOptionEnabled(option)) {
         option.selected = i >= minIndex && i <= maxIndex
       }
     }
 
     instance._options.dispatchEvent(new CustomEvent('change', {bubbles: true, cancelable: true}))
+  }
+
+  function isEnabledOptionUi(optionUi) {
+    return (
+      optionUi.hasAttribute('data-szn-options-option') &&
+      isOptionEnabled(optionUi._option)
+    )
+  }
+
+  function isOptionEnabled(option) {
+    return (
+      !option.disabled &&
+      !option.parentNode.disabled
+    )
   }
 
   function updateUi(instance) {
