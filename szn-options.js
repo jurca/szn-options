@@ -14,16 +14,19 @@
       this._mounted = false
 
       this._onItemHovered = event => {
-        if (this._options.multiple) {
-          return
-        }
-
         const itemUi = event.target
         if (
           !itemUi.hasAttribute('data-szn-options-option') ||
           itemUi._option.disabled ||
           itemUi._option.parentNode.disabled
         ) {
+          return
+        }
+
+        if (this._options.multiple) {
+          if (this._dragSelectionStartOption) {
+            updateMultiSelection(this, event.target)
+          }
           return
         }
 
@@ -36,8 +39,9 @@
       }
 
       this._onItemClicked = event => {
-        if (this._dragSelectionStartOption) {
-          return // multi-select
+        if (this._dragSelectionStartOption) { // multi-select
+          this._dragSelectionStartOption = null
+          return
         }
 
         const itemUi = event.target
@@ -52,6 +56,24 @@
         this._root.removeAttribute('data-szn-options-highlighting')
         this._options.selectedIndex = itemUi._option.index
         this._options.dispatchEvent(new CustomEvent('change', {bubbles: true, cancelable: true}))
+      }
+
+      this._onItemSelectionStart = event => {
+        if (!this._options.multiple) {
+          return
+        }
+
+        const itemUi = event.target
+        if (
+          !itemUi.hasAttribute('data-szn-options-option') ||
+          itemUi._option.disabled ||
+          itemUi._option.parentNode.disabled
+        ) {
+          return
+        }
+
+        this._dragSelectionStartOption = itemUi._option
+        updateMultiSelection(this, itemUi)
       }
 
       this._onSelectionChange = () => {
@@ -89,13 +111,32 @@
 
     instance._options.addEventListener('change', instance._onSelectionChange)
     instance._root.addEventListener('mouseover', instance._onItemHovered)
+    instance._root.addEventListener('mousedown', instance._onItemSelectionStart)
     instance._root.addEventListener('mouseup', instance._onItemClicked)
   }
 
   function removeEventListeners(instance) {
     instance._options.removeEventListener('change', instance._onSelectionChange)
     instance._root.removeEventListener('mouseover', instance._onItemHovered)
+    instance._root.removeEventListener('mousedown', instance._onItemSelectionStart)
     instance._root.removeEventListener('mouseup', instance._onItemClicked)
+  }
+
+  function updateMultiSelection(instance, lastHoveredItem) {
+    const startIndex = instance._dragSelectionStartOption.index
+    const lastIndex = lastHoveredItem._option.index
+    const minIndex = Math.min(startIndex, lastIndex)
+    const maxIndex = Math.max(startIndex, lastIndex)
+    const options = instance._options.options
+
+    for (let i = 0, length = options.length; i < length; i++) {
+      const option = options.item(i)
+      if (!option.disabled && !option.parentNode.disabled) {
+        option.selected = i >= minIndex && i <= maxIndex
+      }
+    }
+
+    instance._options.dispatchEvent(new CustomEvent('change', {bubbles: true, cancelable: true}))
   }
 
   function updateUi(instance) {
