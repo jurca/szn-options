@@ -2,7 +2,6 @@
 ;(global => {
   const SznElements = global.SznElements = global.SznElements || {}
 
-  // TODO: when scrolling, scroll to the currently selected option on change
   SznElements['szn-options'] = class SznOptions {
     constructor(rootElement) {
       rootElement.setOptions = (options) => this.setOptions(options)
@@ -12,6 +11,10 @@
       this._options = null
       this._dragSelectionStartOption = null
       this._mounted = false
+      this._lastSelectionIndexes = {
+        start: -1,
+        end: -1,
+      }
 
       this._onItemHovered = event => onItemHovered(this, event.target)
       this._onItemClicked = event => onItemClicked(this, event.target)
@@ -30,6 +33,9 @@
     onMount() {
       this._mounted = true
       addEventListeners(this)
+      if (this._options) {
+        scrollToSelection(this, this._options.selectedIndex, this._options.selectedIndex)
+      }
     }
 
     onUnmount() {
@@ -113,6 +119,42 @@
     updateMultiSelection(instance, itemUi)
   }
 
+  function scrollToSelection(instance, selectionStartIndex, selectionEndIndex) {
+    const lastSelectionIndexes = instance._lastSelectionIndexes
+    if (
+      selectionStartIndex === -1 ||
+      (selectionStartIndex === lastSelectionIndexes.start && selectionEndIndex === lastSelectionIndexes.end)
+    ) {
+      return
+    }
+
+    const changedIndex = selectionStartIndex !== lastSelectionIndexes.start ? selectionStartIndex : selectionEndIndex
+    scrollToOption(instance, changedIndex)
+
+    lastSelectionIndexes.start = selectionStartIndex
+    lastSelectionIndexes.end = selectionEndIndex
+  }
+
+  function scrollToOption(instance, optionIndex) {
+    const ui = instance._root
+    if (ui.clientHeight >= ui.scrollHeight) {
+      return
+    }
+
+    const uiBounds = ui.getBoundingClientRect()
+    const options = instance._root.querySelectorAll('[data-szn-options-option]')
+    const optionBounds = options[optionIndex].getBoundingClientRect()
+    if (optionBounds.top >= uiBounds.top && optionBounds.bottom <= uiBounds.bottom) {
+      return
+    }
+
+    const delta = optionBounds.top < uiBounds.top ?
+      optionBounds.top - uiBounds.top
+    :
+      optionBounds.bottom - uiBounds.bottom
+    ui.scrollTop += delta
+  }
+
   function updateMultiSelection(instance, lastHoveredItem) {
     const startIndex = instance._dragSelectionStartOption.index
     const lastIndex = lastHoveredItem._option.index
@@ -150,6 +192,17 @@
     }
 
     updateGroupUi(instance._root, instance._options)
+    if (instance._mounted) {
+      const options = instance._options.options
+      let lastSelectedIndex = -1
+      for (let i = options.length - 1; i >= 0; i--) {
+        if (options.item(i).selected) {
+          lastSelectedIndex = i
+          break
+        }
+      }
+      scrollToSelection(instance, instance._options.selectedIndex, lastSelectedIndex)
+    }
   }
 
   function updateGroupUi(uiGroup, optionsGroup) {
