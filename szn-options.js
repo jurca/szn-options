@@ -13,56 +13,9 @@
       this._dragSelectionStartOption = null
       this._mounted = false
 
-      this._onItemHovered = event => {
-        const itemUi = event.target
-        if (!isEnabledOptionUi(itemUi)) {
-          return
-        }
-
-        if (this._options.multiple) {
-          if (this._dragSelectionStartOption) {
-            updateMultiSelection(this, event.target)
-          }
-          return
-        }
-
-        this._root.setAttribute('data-szn-options-highlighting', '')
-        const previouslyHighlighted = this._root.querySelector('[data-szn-options-highlighted]')
-        if (previouslyHighlighted) {
-          previouslyHighlighted.removeAttribute('data-szn-options-highlighted')
-        }
-        itemUi.setAttribute('data-szn-options-highlighted', '')
-      }
-
-      this._onItemClicked = event => {
-        if (this._dragSelectionStartOption) { // multi-select
-          this._dragSelectionStartOption = null
-          return
-        }
-
-        const itemUi = event.target
-        if (!isEnabledOptionUi(itemUi)) {
-          return
-        }
-
-        this._root.removeAttribute('data-szn-options-highlighting')
-        this._options.selectedIndex = itemUi._option.index
-        this._options.dispatchEvent(new CustomEvent('change', {bubbles: true, cancelable: true}))
-      }
-
-      this._onItemSelectionStart = event => {
-        if (!this._options.multiple) {
-          return
-        }
-
-        const itemUi = event.target
-        if (!isEnabledOptionUi(itemUi)) {
-          return
-        }
-
-        this._dragSelectionStartOption = itemUi._option
-        updateMultiSelection(this, itemUi)
-      }
+      this._onItemHovered = event => onItemHovered(this, event.target)
+      this._onItemClicked = event => onItemClicked(this, event.target)
+      this._onItemSelectionStart = event => onItemSelectionStart(this, event.target)
 
       this._onSelectionEnd = () => {
         this._dragSelectionStartOption = null
@@ -114,6 +67,50 @@
     instance._root.removeEventListener('mousedown', instance._onItemSelectionStart)
     instance._root.removeEventListener('mouseup', instance._onItemClicked)
     removeEventListener('mouseup', instance._onSelectionEnd)
+  }
+
+  function onItemHovered(instance, itemUi) {
+    if (!isEnabledOptionUi(itemUi)) {
+      return
+    }
+
+    if (instance._options.multiple) {
+      if (instance._dragSelectionStartOption) {
+        updateMultiSelection(instance, event.target)
+      }
+      return
+    }
+
+    instance._root.setAttribute('data-szn-options-highlighting', '')
+    const previouslyHighlighted = instance._root.querySelector('[data-szn-options-highlighted]')
+    if (previouslyHighlighted) {
+      previouslyHighlighted.removeAttribute('data-szn-options-highlighted')
+    }
+    itemUi.setAttribute('data-szn-options-highlighted', '')
+  }
+
+  function onItemClicked(instance, itemUi) {
+    if (instance._dragSelectionStartOption) { // multi-select
+      instance._dragSelectionStartOption = null
+      return
+    }
+
+    if (!isEnabledOptionUi(itemUi)) {
+      return
+    }
+
+    instance._root.removeAttribute('data-szn-options-highlighting')
+    instance._options.selectedIndex = itemUi._option.index
+    instance._options.dispatchEvent(new CustomEvent('change', {bubbles: true, cancelable: true}))
+  }
+
+  function onItemSelectionStart(instance, itemUi) {
+    if (!instance._options.multiple || !isEnabledOptionUi(itemUi)) {
+      return
+    }
+
+    instance._dragSelectionStartOption = itemUi._option
+    updateMultiSelection(instance, itemUi)
   }
 
   function updateMultiSelection(instance, lastHoveredItem) {
