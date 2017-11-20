@@ -211,7 +211,20 @@
     addMissingItems(uiGroup, optionsGroup)
   }
 
-  function removeRemovedItems(groupUi, options) {}
+  function removeRemovedItems(groupUi, optionsGroup) {
+    const options = Array.prototype.slice.call(optionsGroup.children)
+    let currentItemUi = groupUi.firstElementChild
+    while (currentItemUi) {
+      if (options.indexOf(currentItemUi._option) > -1) {
+        currentItemUi = currentItemUi.nextElementSibling
+        continue
+      }
+
+      const itemToRemove = currentItemUi
+      currentItemUi = currentItemUi.nextElementSibling
+      groupUi.removeChild(itemToRemove)
+    }
+  }
 
   function updateExistingItems(groupUi) {
     let itemUi = groupUi.firstElementChild
