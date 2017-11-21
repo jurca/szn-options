@@ -71,6 +71,14 @@
       this._additionalSelectedIndexes = []
 
       /**
+       * Set to <code>true</code> if the user started to drag the mouse pointer over an already selected item while
+       * holding the Ctrl key. The items selected by the user using the current action will be deselected.
+       *
+       * @type {boolean}
+       */
+      this._invertSelection = false
+
+      /**
        * The index of the option at which the multi-items selection started the last time.
        *
        * @type {number}
@@ -242,6 +250,8 @@
    *
    * The function marks the starting item used previously as the current starting item if the Shift key is pressed. The
    * function marks the indexes of the currently selected items if the Ctrl key is pressed and the Shift key is not.
+   * Also, if the Ctrl key pressed, the Shift key is not, and the user starts at an already selected item, the function
+   * will mark this as inverted selection.
    *
    * The function has no effect for single-selects.
    *
@@ -265,6 +275,9 @@
             instance._additionalSelectedIndexes.push(i)
           }
         }
+        instance._invertSelection = itemUi._option.selected
+      } else {
+        instance._invertSelection = false
       }
       instance._dragSelectionStartOption = itemUi._option
     }
@@ -349,7 +362,11 @@
     for (let i = 0, length = options.length; i < length; i++) {
       const option = options.item(i)
       if (isOptionEnabled(option)) {
-        option.selected = (i >= minIndex && i <= maxIndex) || additionalIndexes.indexOf(i) > -1
+        let isOptionSelected = additionalIndexes.indexOf(i) > -1
+        if (i >= minIndex && i <= maxIndex) {
+          isOptionSelected = !instance._invertSelection
+        }
+        option.selected = isOptionSelected
       }
     }
 
