@@ -1,0 +1,14 @@
+@import "szn-options.css";
+
+:root {
+  --szn-options-border-color: #cccccc;
+  --szn-options-text-color: #000000;
+  --szn-options-background-color: #ffffff;
+
+  --szn-options-selected-background: #eeeeee;
+  --szn-options-disabled-text: #cccccc;
+
+  --szn-options-border-radius: 0 0 4px 4px;
+  --szn-options-item-padding: 5px;
+  --szn-options-item-indent: 12px;
+}

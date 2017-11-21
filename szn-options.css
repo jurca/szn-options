@@ -3,8 +3,8 @@ szn-options {
 
   z-index: 1000;
 
-  border: 1px solid #cccccc;
-  border-radius: 0 0 4px 4px;
+  border: 1px solid var(--szn-options-border-color, #cccccc);
+  border-radius: var(--szn-options-border-radius, 0 0 4px 4px);
   height: 100%;
   box-sizing: border-box;
   overflow: auto;
@@ -12,9 +12,9 @@ szn-options {
 
   white-space: nowrap;
   text-overflow: ellipsis;
-  color: black;
+  color: var(--szn-options-text-color, #000000);
 
-  background: white;
+  background: var(--szn-options-background-color, #ffffff);
 
   user-select: none;
 }
@@ -22,7 +22,8 @@ szn-options {
 szn-options [data-szn-options-option] {
   display: block;
 
-  padding: 5px 5px 5px 12px;
+  padding: var(--szn-options-item-padding, 5px);
+  padding-left: var(--szn-options-item-indent, 12px);
 
   cursor: pointer;
 }
@@ -33,7 +34,7 @@ szn-options [disabled] [data-szn-options-option] {
 }
 
 szn-options [data-szn-options-selected] {
-  background: #eeeeee;
+  background: var(--szn-options-selected-background, #eeeeee);
 }
 
 szn-options [data-szn-options-optgroup] {
@@ -41,13 +42,14 @@ szn-options [data-szn-options-optgroup] {
 }
 
 szn-options [data-szn-options-optgroup] [data-szn-options-option] {
-  padding-left: 24px;
+  padding-left: calc(2 * var(--szn-options-item-indent, 12px));
 }
 
 szn-options [data-szn-options-optgroup-label]:before {
   display: block;
 
-  padding: 5px 5px 5px 12px;
+  padding: var(--szn-options-item-padding, 5px);
+  padding-left: var(--szn-options-item-indent, 12px);
 
   content: attr(data-szn-options-optgroup-label);
   font-weight: bold;
@@ -58,9 +60,9 @@ szn-options[data-szn-options-highlighting] [data-szn-options-selected] {
 }
 
 szn-options[data-szn-options-highlighting] [data-szn-options-highlighted] {
-  background: #eeeeee;
+  background: var(--szn-options-selected-background, #eeeeee);
 }
 
 szn-options [disabled] {
-  color: #cccccc;
+  color: var(--szn-options-disabled-text, #cccccc);
 }
