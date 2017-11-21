@@ -4,6 +4,10 @@ const del = require('del')
 const gulp = require('gulp')
 const babel = require('gulp-babel')
 const rename = require('gulp-rename')
+const postCss = require('gulp-postcss')
+const postCssCalc = require('postcss-calc')
+const postCssVariables = require('postcss-css-variables')
+const postCssImport = require('postcss-import')
 
 function compile() {
   return gulp
@@ -46,6 +50,17 @@ function copyES6Implementation() {
     .pipe(gulp.dest('./dist'))
 }
 
+function compileDefaultCss() {
+  return gulp
+    .src('./szn-options.default.css')
+    .pipe(postCss([
+      postCssImport(),
+      postCssVariables(),
+      postCssCalc(),
+    ]))
+    .pipe(gulp.dest('./dist'))
+}
+
 function minify() {
   return gulp
     .src('./dist/*.js')
@@ -66,6 +81,7 @@ exports.default = gulp.series(
   clean,
   gulp.parallel(
     compile,
+    compileDefaultCss,
     copy,
   ),
   minify,
