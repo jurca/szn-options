@@ -147,7 +147,7 @@
       attributes: true,
       characterData: true,
       subtree: true,
-      attributeFilter: ['disabled', 'label', 'selected', 'title']
+      attributeFilter: ['disabled', 'label', 'selected', 'title', 'multiple']
     })
   }
 
@@ -394,6 +394,12 @@
   function updateUi(instance) {
     if (!instance._options) {
       return
+    }
+
+    if (instance._options.multiple) {
+      instance._root.setAttribute('data-szn-options-multiple', '')
+    } else {
+      instance._root.removeAttribute('data-szn-options-multiple')
     }
 
     updateGroupUi(instance._root, instance._options)

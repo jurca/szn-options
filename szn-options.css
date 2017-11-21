@@ -4,7 +4,7 @@ szn-options {
   z-index: 1000;
 
   border: 1px solid var(--szn-options-border-color, #cccccc);
-  border-radius: var(--szn-options-border-radius, 0 0 4px 4px);
+  border-radius: var(--szn-options-border-radius-dropdown, 0 0 4px 4px);
   height: 100%;
   box-sizing: border-box;
   overflow: auto;
@@ -17,6 +17,10 @@ szn-options {
   background: var(--szn-options-background-color, #ffffff);
 
   user-select: none;
+}
+
+szn-options[data-szn-options-multiple] {
+  border-radius: var(--szn-options-border-radius-mutli-select, 4px);
 }
 
 szn-options [data-szn-options-option] {
