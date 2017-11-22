@@ -33,7 +33,8 @@ szn-options [data-szn-options-option] {
 }
 
 szn-options [data-szn-options-option][disabled],
-szn-options [disabled] [data-szn-options-option] {
+szn-options [disabled] [data-szn-options-option],
+szn-options[disabled] [data-szn-options-option] {
   cursor: default;
 }
 
@@ -67,6 +68,7 @@ szn-options[data-szn-options-highlighting] [data-szn-options-highlighted] {
   background: var(--szn-options-selected-background, #eeeeee);
 }
 
-szn-options [disabled] {
+szn-options [disabled],
+szn-options[disabled] {
   color: var(--szn-options-disabled-text, #cccccc);
 }

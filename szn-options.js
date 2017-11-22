@@ -201,7 +201,7 @@
    * @param {Element} itemUi The element which's area the mouse pointer entered.
    */
   function onItemHovered(instance, itemUi) {
-    if (!isEnabledOptionUi(itemUi)) {
+    if (instance._options.disabled || !isEnabledOptionUi(itemUi)) {
       return
     }
 
@@ -235,7 +235,7 @@
       return
     }
 
-    if (!isEnabledOptionUi(itemUi)) {
+    if (instance._options.disabled || !isEnabledOptionUi(itemUi)) {
       return
     }
 
@@ -260,7 +260,7 @@
    * @param {MouseEvent} event The mouse event representing the user's action.
    */
   function onItemSelectionStart(instance, itemUi, event) {
-    if (!instance._options.multiple || !isEnabledOptionUi(itemUi)) {
+    if (instance._options.disabled || !instance._options.multiple || !isEnabledOptionUi(itemUi)) {
       return
     }
 
@@ -413,6 +413,11 @@
       return
     }
 
+    if (instance._options.disabled) {
+      instance._root.setAttribute('disabled', '')
+    } else {
+      instance._root.removeAttribute('disabled')
+    }
     if (instance._options.multiple) {
       instance._root.setAttribute('data-szn-options-multiple', '')
     } else {
