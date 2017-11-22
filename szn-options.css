@@ -72,3 +72,7 @@ szn-options [disabled],
 szn-options[disabled] {
   color: var(--szn-options-disabled-text, #cccccc);
 }
+
+szn-tethered[data-vertical-align="top"] szn-options {
+  border-radius: var(--szn-options-border-radius-dropup, 4px 4px 0 0);
+}

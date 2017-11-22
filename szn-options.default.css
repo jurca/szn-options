@@ -9,6 +9,7 @@
   --szn-options-disabled-text: #cccccc;
 
   --szn-options-border-radius-dropdown: 0 0 4px 4px;
+  --szn-options-border-radius-dropup: 4px 4px 0 0;
   --szn-options-border-radius-mutli-select: 4px;
   --szn-options-item-padding: 5px;
   --szn-options-item-indent: 12px;
