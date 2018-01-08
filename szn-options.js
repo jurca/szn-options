@@ -2,6 +2,13 @@
 ;(global => {
   const SznElements = global.SznElements = global.SznElements || {}
 
+  const CSS_STYLES = `
+%{CSS_STYLES}%
+  `
+  const CSS_STYLES_TAG = 'data-styles--szn-options'
+
+  let stylesInjected = false
+
   SznElements['szn-options'] = class SznOptions {
     /**
      * Initializes the szn-options element's implementation.
@@ -97,6 +104,14 @@
       this._onSelectionChange = () => {
         this._root.removeAttribute('data-szn-options-highlighting')
         updateUi(this)
+      }
+
+      if (!stylesInjected) {
+        const stylesContainer = document.createElement('style')
+        stylesContainer.innerHTML = CSS_STYLES
+        stylesContainer.setAttribute(CSS_STYLES_TAG, '')
+        document.head.appendChild(stylesContainer)
+        stylesInjected = true
       }
     }
 
