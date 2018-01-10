@@ -200,7 +200,9 @@
    * @param {SznElements.SznOptions} instance The szn-options element instance.
    */
   function removeEventListeners(instance) {
-    instance._options.removeEventListener('change', instance._onSelectionChange)
+    if (instance._options) {
+      instance._options.removeEventListener('change', instance._onSelectionChange)
+    }
     instance._root.removeEventListener('mouseover', instance._onItemHovered)
     instance._root.removeEventListener('mousedown', instance._onItemSelectionStart)
     instance._root.removeEventListener('mouseup', instance._onItemClicked)
