@@ -4,7 +4,7 @@
   "description": "Accessible HTML selectbox options list with customizable UI. Based on web components and easy to integrate with various frameworks like React or Angular.",
   "main": "szn-options.js",
   "scripts": {
-    "test": "jest",
+    "test": "eslint --max-warnings=0 *.js && jest",
     "build": "gulp",
     "prepublishOnly": "echo Run \\'npm run publish-package\\' instead && exit 1",
     "publish-package": "git push && git push --tags && npm run build && npm publish --ignore-scripts dist"
