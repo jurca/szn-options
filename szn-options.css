@@ -3,7 +3,8 @@ szn-options {
 
   z-index: 1000;
 
-  border: 1px solid var(--szn-options--border-color, #cccccc);
+  border: solid var(--szn-options--border-color, #cccccc);
+  border-width: var(--szn-options--border-width, 1px);
   border-radius: var(--szn-options--border-radius-dropdown, 0 0 4px 4px);
   height: 100%;
   box-sizing: border-box;
@@ -26,8 +27,7 @@ szn-options[data-szn-options--multiple] {
 szn-options [data-szn-options--option] {
   display: block;
 
-  padding: var(--szn-options--item-padding, 5px);
-  padding-left: var(--szn-options--item-indent, 12px);
+  padding: var(--szn-options--item-padding, 5px 5px 5px 12px);
 
   cursor: pointer;
 }
@@ -53,8 +53,7 @@ szn-options [data-szn-options--optgroup] [data-szn-options--option] {
 szn-options [data-szn-options--optgroup-label]:before {
   display: block;
 
-  padding: var(--szn-options--item-padding, 5px);
-  padding-left: var(--szn-options--item-indent, 12px);
+  padding: var(--szn-options--item-padding, 5px 5px 5px 12px);
 
   content: attr(data-szn-options--optgroup-label);
   font-weight: bold;
