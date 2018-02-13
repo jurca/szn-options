@@ -98,7 +98,7 @@
       }
 
       this._onSelectionChange = () => {
-        this._root.removeAttribute('data-szn-options-highlighting')
+        this._root.removeAttribute('data-szn-options--highlighting')
         updateUi(this)
       }
 
@@ -117,7 +117,7 @@
 
     onUnmount() {
       removeEventListeners(this)
-      this._root.removeAttribute('data-szn-options-highlighting')
+      this._root.removeAttribute('data-szn-options--highlighting')
       this._mounted = false
       this._observer.disconnect()
     }
@@ -219,12 +219,12 @@
       return
     }
 
-    instance._root.setAttribute('data-szn-options-highlighting', '')
-    const previouslyHighlighted = instance._root.querySelector('[data-szn-options-highlighted]')
+    instance._root.setAttribute('data-szn-options--highlighting', '')
+    const previouslyHighlighted = instance._root.querySelector('[data-szn-options--highlighted]')
     if (previouslyHighlighted) {
-      previouslyHighlighted.removeAttribute('data-szn-options-highlighted')
+      previouslyHighlighted.removeAttribute('data-szn-options--highlighted')
     }
-    itemUi.setAttribute('data-szn-options-highlighted', '')
+    itemUi.setAttribute('data-szn-options--highlighted', '')
   }
 
   /**
@@ -246,7 +246,7 @@
       return
     }
 
-    instance._root.removeAttribute('data-szn-options-highlighting')
+    instance._root.removeAttribute('data-szn-options--highlighting')
     instance._options.selectedIndex = itemUi._option.index
     instance._options.dispatchEvent(new CustomEvent('change', {bubbles: true, cancelable: true}))
   }
@@ -334,7 +334,7 @@
     }
 
     const uiBounds = ui.getBoundingClientRect()
-    const options = instance._root.querySelectorAll('[data-szn-options-option]')
+    const options = instance._root.querySelectorAll('[data-szn-options--option]')
     const optionBounds = options[optionIndex].getBoundingClientRect()
     if (optionBounds.top >= uiBounds.top && optionBounds.bottom <= uiBounds.bottom) {
       return
@@ -389,7 +389,7 @@
    */
   function isEnabledOptionUi(optionUi) {
     return (
-      optionUi.hasAttribute('data-szn-options-option') &&
+      optionUi.hasAttribute('data-szn-options--option') &&
       isOptionEnabled(optionUi._option)
     )
   }
@@ -426,9 +426,9 @@
       instance._root.removeAttribute('disabled')
     }
     if (instance._options.multiple) {
-      instance._root.setAttribute('data-szn-options-multiple', '')
+      instance._root.setAttribute('data-szn-options--multiple', '')
     } else {
-      instance._root.removeAttribute('data-szn-options-multiple')
+      instance._root.removeAttribute('data-szn-options--multiple')
     }
 
     updateGroupUi(instance._root, instance._options)
@@ -514,7 +514,7 @@
 
     if (option.tagName === 'OPTGROUP') {
       updateGroupUi(itemUi, option)
-      itemUi.setAttribute('data-szn-options-optgroup-label', option.label)
+      itemUi.setAttribute('data-szn-options--optgroup-label', option.label)
       return
     }
 
@@ -526,9 +526,9 @@
     }
 
     if (option.selected) {
-      itemUi.setAttribute('data-szn-options-selected', '')
+      itemUi.setAttribute('data-szn-options--selected', '')
     } else {
-      itemUi.removeAttribute('data-szn-options-selected')
+      itemUi.removeAttribute('data-szn-options--selected')
     }
   }
 
@@ -548,7 +548,7 @@
       if (!nextItemUi || nextItemUi._option !== nextOption) {
         const newItemUi = document.createElement('szn-')
         newItemUi._option = nextOption
-        newItemUi.setAttribute('data-szn-options-' + (nextOption.tagName === 'OPTGROUP' ? 'optgroup' : 'option'), '')
+        newItemUi.setAttribute('data-szn-options--' + (nextOption.tagName === 'OPTGROUP' ? 'optgroup' : 'option'), '')
         updateItem(newItemUi)
         groupUi.insertBefore(newItemUi, nextItemUi)
       } else {
