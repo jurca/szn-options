@@ -37,6 +37,9 @@
     "url": "https://github.com/jurca/szn-options/issues"
   },
   "homepage": "https://github.com/jurca/szn-options#readme",
+  "peerDependencies": {
+    "@jurca/szn-elements": "^1.0.0"
+  },
   "devDependencies": {
     "babel-preset-env": "^1.6.1",
     "babel-preset-minify": "^0.2.0",
@@ -51,8 +54,5 @@
     "postcss-calc": "^6.0.1",
     "postcss-css-variables": "^0.8.0",
     "postcss-import": "^11.0.0"
-  },
-  "dependencies": {
-    "@jurca/szn-elements": "0.0.4"
   }
 }
