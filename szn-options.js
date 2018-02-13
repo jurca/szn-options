@@ -128,6 +128,10 @@
      * @param {HTMLElement} options The element containing the options to display.
      */
     setOptions(options) {
+      if (options === this._options) {
+        return
+      }
+
       if (this._options) {
         removeEventListeners(this)
         this._observer.disconnect()
