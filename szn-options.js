@@ -12,7 +12,7 @@
      * @param {Element} rootElement The root HTML element of this custom element's implementation.
      */
     constructor(rootElement) {
-      rootElement.setOptions = (options) => this.setOptions(options)
+      rootElement.setOptions = options => this.setOptions(options)
       rootElement.updateUi = () => updateUi(this)
 
       /**
@@ -160,7 +160,7 @@
       attributes: true,
       characterData: true,
       subtree: true,
-      attributeFilter: ['disabled', 'label', 'selected', 'title', 'multiple']
+      attributeFilter: ['disabled', 'label', 'selected', 'title', 'multiple'],
     })
   }
 
@@ -342,7 +342,7 @@
 
     const delta = optionBounds.top < uiBounds.top ?
       optionBounds.top - uiBounds.top
-    :
+      :
       optionBounds.bottom - uiBounds.bottom
     ui.scrollTop += delta
   }
@@ -512,7 +512,7 @@
       itemUi.removeAttribute('disabled')
     }
 
-    if (option.tagName === "OPTGROUP") {
+    if (option.tagName === 'OPTGROUP') {
       updateGroupUi(itemUi, option)
       itemUi.setAttribute('data-szn-options-optgroup-label', option.label)
       return
@@ -548,7 +548,7 @@
       if (!nextItemUi || nextItemUi._option !== nextOption) {
         const newItemUi = document.createElement('szn-')
         newItemUi._option = nextOption
-        newItemUi.setAttribute('data-szn-options-' + (nextOption.tagName === "OPTGROUP" ? 'optgroup' : 'option'), '')
+        newItemUi.setAttribute('data-szn-options-' + (nextOption.tagName === 'OPTGROUP' ? 'optgroup' : 'option'), '')
         updateItem(newItemUi)
         groupUi.insertBefore(newItemUi, nextItemUi)
       } else {
