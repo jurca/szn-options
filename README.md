@@ -6,6 +6,14 @@ components and easy to integrate with various frameworks like React or Angular.
 This component is not meant to be used stand-alone, it is a helper component
 meant to be used in other `szn-` components.
 
+---
+
+This project has been re-integrated into the
+[szn-select](https://github.com/jurca/szn-select) element. This repository is
+no longer up-to-date.
+
+---
+
 ## Usage
 
 Markup (usually created dynamically via JS):
